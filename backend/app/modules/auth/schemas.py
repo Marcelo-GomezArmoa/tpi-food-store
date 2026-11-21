@@ -1,10 +1,11 @@
+from datetime import datetime
+
 from pydantic import ConfigDict, EmailStr, Field
 from sqlmodel import SQLModel
 
 
 class LoginResponse(SQLModel):
-    access_token: str
-    token_type: str = "bearer"
+    message: str = "Login exitoso"
 
 
 class RegisterRequest(SQLModel):
@@ -14,7 +15,7 @@ class RegisterRequest(SQLModel):
     password: str = Field(min_length=8, max_length=72)
 
 
-class UserResponse(SQLModel):
+class UserPublic(SQLModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -23,3 +24,7 @@ class UserResponse(SQLModel):
     email: EmailStr
     role: str
     disabled: bool
+    created_at: datetime
+
+
+UserResponse = UserPublic

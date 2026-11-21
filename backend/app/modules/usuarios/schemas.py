@@ -1,21 +1,5 @@
-from datetime import datetime
+from app.modules.auth.schemas import UserPublic
 
-from pydantic import ConfigDict, EmailStr
-from sqlmodel import SQLModel
+UsuarioRead = UserPublic
 
-
-class UsuarioRead(SQLModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    username: str
-    full_name: str
-    email: EmailStr
-    role: str
-    disabled: bool
-    created_at: datetime
-
-
-class UsuarioUpdate(SQLModel):
-    full_name: str | None = None
-    disabled: bool | None = None
+__all__ = ["UsuarioRead", "UserPublic"]

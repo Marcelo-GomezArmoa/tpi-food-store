@@ -33,7 +33,7 @@ def seed_database(session: Session) -> None:
             Usuario(
                 username="admin",
                 full_name="Administrador Food Store",
-                email="admin@foodstore.local",
+                email="admin@example.com",
                 hashed_password=get_password_hash("Admin1234!"),
                 role="admin",
             )

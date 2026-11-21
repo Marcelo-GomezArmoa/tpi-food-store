@@ -1,6 +1,8 @@
 from pydantic import Field
 from sqlmodel import SQLModel
 
+from app.modules.categorias.schemas import CategoriaRead
+
 
 class ProductoCreate(SQLModel):
     categoria_id: int
@@ -24,6 +26,10 @@ class ProductoUpdate(SQLModel):
     activo: bool | None = None
 
 
+class ProductoStockUpdate(SQLModel):
+    stock: int = Field(ge=0)
+
+
 class ProductoRead(SQLModel):
     model_config = {"from_attributes": True}
 
@@ -36,3 +42,9 @@ class ProductoRead(SQLModel):
     stock: int
     disponible: bool
     activo: bool
+    categoria: CategoriaRead
+
+
+class ProductosPaginados(SQLModel):
+    total: int
+    items: list[ProductoRead]

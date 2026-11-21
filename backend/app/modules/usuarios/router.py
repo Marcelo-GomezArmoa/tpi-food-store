@@ -4,32 +4,34 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
 from app.core.database import get_session
-from app.core.deps import require_role
-from app.modules.usuarios.schemas import UsuarioRead, UsuarioUpdate
+from app.core.deps import get_current_active_user, require_role
+from app.modules.auth.schemas import UserPublic
+from app.modules.usuarios.models import Usuario
 from app.modules.usuarios.service import UsuarioService
 
 router = APIRouter(
-    prefix="/usuarios",
-    tags=["usuarios"],
+    prefix="/admin/usuarios",
+    tags=["administración de usuarios"],
     dependencies=[Depends(require_role("admin"))],
 )
 SessionDep = Annotated[Session, Depends(get_session)]
+CurrentUserDep = Annotated[Usuario, Depends(get_current_active_user)]
 
 
-@router.get("", response_model=list[UsuarioRead])
-def list_users(session: SessionDep) -> list[UsuarioRead]:
+@router.get("", response_model=list[UserPublic])
+def list_users(session: SessionDep) -> list[UserPublic]:
     return UsuarioService(session).list_users()
 
 
-@router.get("/{usuario_id}", response_model=UsuarioRead)
-def get_user(usuario_id: int, session: SessionDep) -> UsuarioRead:
-    return UsuarioService(session).get_user(usuario_id)
+@router.post("/{user_id}/activar", response_model=UserPublic)
+def activate_user(user_id: int, session: SessionDep) -> UserPublic:
+    return UsuarioService(session).activate(user_id)
 
 
-@router.patch("/{usuario_id}", response_model=UsuarioRead)
-def update_user(
-    usuario_id: int,
-    data: UsuarioUpdate,
+@router.post("/{user_id}/desactivar", response_model=UserPublic)
+def deactivate_user(
+    user_id: int,
     session: SessionDep,
-) -> UsuarioRead:
-    return UsuarioService(session).update_user(usuario_id, data)
+    current_user: CurrentUserDep,
+) -> UserPublic:
+    return UsuarioService(session).deactivate(user_id, current_user)

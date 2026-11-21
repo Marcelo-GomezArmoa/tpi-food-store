@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import ConfigDict, Field
 from sqlmodel import SQLModel
 
 
@@ -11,21 +11,10 @@ class DetallePedidoCreate(SQLModel):
 
 
 class PedidoCreate(SQLModel):
-    forma_pago: str = Field(min_length=1, max_length=50)
-    direccion_entrega: str = Field(min_length=1, max_length=500)
+    forma_pago: str
+    direccion_entrega: str
     notas: str | None = Field(default=None, max_length=1000)
-    items: list[DetallePedidoCreate] = Field(min_length=1)
-
-    @field_validator("items")
-    @classmethod
-    def unique_products(
-        cls,
-        items: list[DetallePedidoCreate],
-    ) -> list[DetallePedidoCreate]:
-        ids = [item.producto_id for item in items]
-        if len(ids) != len(set(ids)):
-            raise ValueError("Un pedido no puede repetir productos")
-        return items
+    items: list[DetallePedidoCreate] = Field(default_factory=list)
 
 
 class PedidoEstadoUpdate(SQLModel):
@@ -57,3 +46,17 @@ class PedidoRead(SQLModel):
     created_at: datetime
     updated_at: datetime
     items: list[DetallePedidoRead]
+
+
+class PedidosPaginados(SQLModel):
+    total: int
+    items: list[PedidoRead]
+
+
+class ResumenPedidos(SQLModel):
+    pendientes: int
+    en_preparacion: int
+    entregados: int
+    cancelados: int
+    pedidos_hoy: int
+    ingresos_entregados: float

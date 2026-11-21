@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlmodel import Session
 
 from app.core.security import get_password_hash, verify_password
-from app.modules.auth.schemas import RegisterRequest, UserResponse
+from app.modules.auth.schemas import RegisterRequest, UserPublic
 from app.modules.usuarios.repository import UsuarioRepository
 
 
@@ -11,7 +11,7 @@ class AuthService:
         self.session = session
         self.users = UsuarioRepository(session)
 
-    def register(self, data: RegisterRequest) -> UserResponse:
+    def register(self, data: RegisterRequest) -> UserPublic:
         username = data.username.strip()
         email = str(data.email).strip().lower()
         if self.users.get_by_username(username) is not None:
@@ -33,7 +33,7 @@ class AuthService:
         )
         self.session.commit()
         self.session.refresh(user)
-        return UserResponse.model_validate(user)
+        return UserPublic.model_validate(user)
 
     def authenticate(self, username: str, password: str):
         user = self.users.get_by_username(username.strip())

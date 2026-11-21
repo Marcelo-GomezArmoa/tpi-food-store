@@ -4,6 +4,8 @@ from app.modules.productos.models import Producto
 from app.modules.productos.schemas import (
     ProductoCreate,
     ProductoRead,
+    ProductosPaginados,
+    ProductoStockUpdate,
     ProductoUpdate,
 )
 from app.modules.productos.unit_of_work import ProductosUnitOfWork
@@ -13,12 +15,30 @@ class ProductoService:
     def __init__(self, uow: ProductosUnitOfWork) -> None:
         self.uow = uow
 
-    def listar(self) -> list[ProductoRead]:
+    def listar(
+        self,
+        *,
+        skip: int = 0,
+        limit: int = 20,
+        search: str | None = None,
+        categoria_id: int | None = None,
+        disponible: bool | None = None,
+    ) -> ProductosPaginados:
         with self.uow as uow:
-            return [
-                ProductoRead.model_validate(producto)
-                for producto in uow.productos.get_active_all()
-            ]
+            total, products = uow.productos.list_active(
+                skip=skip,
+                limit=limit,
+                search=search,
+                categoria_id=categoria_id,
+                disponible=disponible,
+            )
+            return ProductosPaginados(
+                total=total,
+                items=[
+                    ProductoRead.model_validate(producto)
+                    for producto in products
+                ],
+            )
 
     def obtener(self, producto_id: int) -> ProductoRead:
         with self.uow as uow:
@@ -46,6 +66,18 @@ class ProductoService:
                 self._require_active_category(uow, categoria_id)
             for field, value in update_data.items():
                 setattr(producto, field, value)
+            uow.session.flush()
+            return ProductoRead.model_validate(producto)
+
+    def actualizar_stock(
+        self,
+        producto_id: int,
+        data: ProductoStockUpdate,
+    ) -> ProductoRead:
+        with self.uow as uow:
+            producto = self._get_active(uow, producto_id)
+            producto.stock = data.stock
+            producto.disponible = data.stock > 0
             uow.session.flush()
             return ProductoRead.model_validate(producto)
 
