@@ -6,7 +6,7 @@ import type { RegisterData, UsuarioAuth } from '@/features/auth/types/auth.types
 
 export function useRegister() {
   return useMutation({
-    mutationFn: (data: RegisterData) => api.post<UsuarioAuth>('/api/v1/auth/register', data),
+    mutationFn: (data: RegisterData) => api.post<UsuarioAuth>('/auth/register', data),
     onSuccess: () => useNotificationStore.getState().showNotification('Cuenta creada correctamente.'),
     onError: notifyError,
   })

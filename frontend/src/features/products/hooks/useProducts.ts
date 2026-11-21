@@ -24,15 +24,15 @@ export function useProducts(params?: CatalogParams) {
   const query = useQuery({
     queryKey: params ? [...queryKey, params] : queryKey,
     queryFn: async () =>
-      (await api.get<ProductosPaginados>('/api/v1/productos', {
+      (await api.get<ProductosPaginados>('/productos', {
         params,
       })).data,
   })
   const save = useMutation({
     mutationFn: ({ id, data }: { id?: number; data: ProductoData }) =>
       id === undefined
-        ? api.post<Producto>('/api/v1/productos', data)
-        : api.put<Producto>(`/api/v1/productos/${id}`, data),
+        ? api.post<Producto>('/productos', data)
+        : api.put<Producto>(`/productos/${id}`, data),
     onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({ queryKey })
       useNotificationStore.getState().showNotification(
@@ -42,12 +42,21 @@ export function useProducts(params?: CatalogParams) {
     onError: notifyError,
   })
   const remove = useMutation({
-    mutationFn: (id: number) => api.delete(`/api/v1/productos/${id}`),
+    mutationFn: (id: number) => api.delete(`/productos/${id}`),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey })
       useNotificationStore.getState().showNotification('Producto eliminado.')
     },
     onError: notifyError,
   })
-  return { query, save, remove }
+  const updateStock = useMutation({
+    mutationFn: ({ id, stock }: { id: number; stock: number }) =>
+      api.patch<Producto>(`/productos/${id}/stock`, { stock }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey })
+      useNotificationStore.getState().showNotification('Stock actualizado.')
+    },
+    onError: notifyError,
+  })
+  return { query, save, remove, updateStock }
 }

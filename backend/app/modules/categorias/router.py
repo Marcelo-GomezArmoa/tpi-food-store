@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Response, status
 
-from app.core.deps import get_current_active_user, require_role
+from app.core.deps import require_role
 from app.modules.categorias.schemas import (
     CategoriaCreate,
     CategoriaRead,
@@ -12,7 +12,6 @@ from app.modules.categorias.unit_of_work import CategoriasUnitOfWork
 router = APIRouter(
     prefix="/categorias",
     tags=["categorías"],
-    dependencies=[Depends(get_current_active_user)],
 )
 
 

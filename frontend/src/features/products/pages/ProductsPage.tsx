@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/shared/components/DataTable";
 import { ProductoModal } from "@/features/products/components/ProductoModal";
+import { StockModal } from "@/features/products/components/StockModal";
 import { EmptyState, ErrorState, LoadingState } from "@/shared/components/States";
 import { getApiErrorMessage as getErrorMessage } from "@/shared/api/error";
 import { useProducts } from "@/features/products/hooks/useProducts";
@@ -13,7 +14,8 @@ export function ProductsPage() {
   const isAdmin = usuario?.role === "admin";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<Producto | null>(null);
-  const { query, save, remove } = useProducts();
+  const [stockProduct, setStockProduct] = useState<Producto | null>(null);
+  const { query, save, remove, updateStock } = useProducts({ skip: 0, limit: 100 });
   const openModal = (producto: Producto | null) => {
     save.reset();
     setEditing(producto);
@@ -34,10 +36,12 @@ export function ProductsPage() {
     { accessorKey: "nombre", header: "Nombre" },
     { accessorKey: "descripcion", header: "Descripción" },
     { accessorKey: "precio_base", header: "Precio", cell: ({ row }) => `$${row.original.precio_base.toFixed(2)}` },
+    { accessorKey: "stock", header: "Stock" },
     { accessorKey: "disponible", header: "Disponible", cell: ({ row }) => row.original.disponible ? "Sí" : "No" },
     { id: "acciones", header: "Acciones", enableSorting: false, cell: ({ row }) => (
       <div className="flex flex-wrap gap-2">
         {isAdmin && <button type="button" onClick={() => openModal(row.original)} className="rounded bg-purple-600 px-3 py-1 text-white">Editar</button>}
+        {isAdmin && <button type="button" onClick={() => { updateStock.reset(); setStockProduct(row.original); }} className="rounded bg-blue-600 px-3 py-1 text-white">Stock</button>}
         {isAdmin && <button type="button" disabled={remove.isPending} onClick={() => {
           if (window.confirm("¿Estás seguro de que deseas eliminar este producto?")) remove.mutate(row.original.id);
         }} className="rounded bg-red-600 px-3 py-1 text-white disabled:opacity-50">Eliminar</button>}
@@ -57,6 +61,20 @@ export function ProductsPage() {
       {query.data && (query.data.items.length ? <DataTable data={query.data.items} columns={columns} /> : <EmptyState message="No hay productos. ¡Crea uno nuevo!" />)}
       {isAdmin && isModalOpen && (
         <ProductoModal key={editing?.id ?? "new"} producto={editing} error={save.error ? getErrorMessage(save.error) : null} isPending={save.isPending} onClose={() => setIsModalOpen(false)} onSubmit={(data) => save.mutate({ id: editing?.id, data }, { onSuccess: () => { setIsModalOpen(false); setEditing(null); } })} />
+      )}
+      {isAdmin && stockProduct && (
+        <StockModal
+          producto={stockProduct}
+          pending={updateStock.isPending}
+          error={updateStock.error}
+          onClose={() => setStockProduct(null)}
+          onSubmit={(stock) =>
+            updateStock.mutate(
+              { id: stockProduct.id, stock },
+              { onSuccess: () => setStockProduct(null) },
+            )
+          }
+        />
       )}
     </div>
   );

@@ -96,6 +96,25 @@ def first_product(client: TestClient) -> dict:
     return response.json()["items"][0]
 
 
+def test_catalog_read_routes_are_public(
+    api: tuple[TestClient, object],
+) -> None:
+    client, _ = api
+    categories = client.get("/api/v1/categorias")
+    assert categories.status_code == 200
+    assert len(categories.json()) == 3
+    assert client.get(
+        f"/api/v1/categorias/{categories.json()[0]['id']}"
+    ).status_code == 200
+
+    products = client.get("/api/v1/productos")
+    assert products.status_code == 200
+    assert products.json()["total"] == 8
+    assert client.get(
+        f"/api/v1/productos/{products.json()['items'][0]['id']}"
+    ).status_code == 200
+
+
 def test_auth_contract_and_duplicate_conflicts(
     api: tuple[TestClient, object],
 ) -> None:

@@ -4,15 +4,18 @@ import { ErrorState, LoadingState } from '@/shared/components/States'
 import { useAdminUsers } from '@/features/auth/hooks/useAdminUsers'
 import type { UsuarioAdmin } from '@/features/auth/types/auth.types'
 import type { ColumnDef } from '@tanstack/react-table'
+import { useAuth } from '@/features/auth'
 
 export function AdminUsersPage() {
   const { users, changeStatus } = useAdminUsers()
+  const { usuario } = useAuth()
 
   const columns: ColumnDef<UsuarioAdmin>[] = [
     { accessorKey: 'id', header: 'ID' },
+    { accessorKey: 'username', header: 'Usuario' },
     {
-      id: 'nombre',
-      header: 'Usuario',
+      id: 'full_name',
+      header: 'Nombre completo',
       cell: ({ row }) =>
         row.original.full_name,
     },
@@ -33,6 +36,9 @@ export function AdminUsersPage() {
       enableSorting: false,
       cell: ({ row }) => {
         const active = !row.original.disabled
+        if (active && row.original.id === usuario?.id) {
+          return <span className="text-sm text-gray-500">Sesión actual</span>
+        }
         return (
           <button
             type="button"

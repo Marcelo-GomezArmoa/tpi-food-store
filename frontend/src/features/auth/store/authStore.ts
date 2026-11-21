@@ -29,11 +29,11 @@ export const useAuthStore = create<AuthState>()(
         const version = ++sessionVersion
         set({ cargando: true, error: null })
         try {
-          await api.post('/api/v1/auth/token', new URLSearchParams({
+          await api.post('/auth/token', new URLSearchParams({
             username,
             password,
           }))
-          const { data } = await api.get<UsuarioAuth>('/api/v1/auth/me')
+          const { data } = await api.get<UsuarioAuth>('/auth/me')
           if (version === sessionVersion) {
             queryClient.clear()
             set({ usuario: data, cargando: false, error: null })
@@ -52,7 +52,7 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         ++sessionVersion
         try {
-          await api.post('/api/v1/auth/logout')
+          await api.post('/auth/logout')
         } finally {
           get().clearSession()
           window.location.assign('/login')
@@ -62,7 +62,7 @@ export const useAuthStore = create<AuthState>()(
         const version = ++sessionVersion
         set({ cargando: true, error: null })
         try {
-          const { data } = await api.get<UsuarioAuth>('/api/v1/auth/me')
+          const { data } = await api.get<UsuarioAuth>('/auth/me')
           if (version === sessionVersion) {
             set({ usuario: data, cargando: false, error: null })
           }

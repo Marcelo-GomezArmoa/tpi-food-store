@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query, Response, status
 
-from app.core.deps import get_current_active_user, require_role
+from app.core.deps import require_role
 from app.modules.productos.schemas import (
     ProductoCreate,
     ProductoRead,
@@ -14,7 +14,6 @@ from app.modules.productos.unit_of_work import ProductosUnitOfWork
 router = APIRouter(
     prefix="/productos",
     tags=["productos"],
-    dependencies=[Depends(get_current_active_user)],
 )
 
 

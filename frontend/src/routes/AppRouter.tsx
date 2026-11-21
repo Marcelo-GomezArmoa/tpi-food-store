@@ -5,6 +5,8 @@ import { CarritoPage } from '@/features/cart/pages/CarritoPage'
 import { CatalogoPage } from '@/features/catalog/pages/CatalogoPage'
 import { CategoriasPage } from '@/features/categories'
 import { CheckoutPage } from '@/features/orders/pages/CheckoutPage'
+import { AdminPedidosPage } from '@/features/orders/pages/AdminPedidosPage'
+import { AdminResumenPage } from '@/features/orders/pages/AdminResumenPage'
 import { MisPedidosPage } from '@/features/orders/pages/MisPedidosPage'
 import { ProductsPage } from '@/features/products'
 import { ProtectedRoute } from '@/routes/ProtectedRoute'
@@ -32,8 +34,10 @@ export function AppRouter() {
             </Route>
 
             <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route path="/admin/resumen" element={<AdminResumenPage />} />
               <Route path="/admin/categorias" element={<CategoriasPage />} />
               <Route path="/admin/productos" element={<ProductsPage />} />
+              <Route path="/admin/pedidos" element={<AdminPedidosPage />} />
               <Route path="/admin/usuarios" element={<AdminUsersPage />} />
             </Route>
 

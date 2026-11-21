@@ -5,7 +5,7 @@ import { api } from '@/shared/api/api'
 import { notifyError } from '@/shared/api/notifyError'
 import { useNotificationStore } from '@/shared/store/notificationStore'
 
-const USERS_PATH = '/api/v1/admin/usuarios'
+const USERS_PATH = '/admin/usuarios'
 const queryKey = ['admin-users']
 
 export function useAdminUsers() {

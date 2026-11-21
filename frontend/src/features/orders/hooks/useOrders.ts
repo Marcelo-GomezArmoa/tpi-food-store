@@ -4,21 +4,24 @@ import type {
   Pedido,
   PedidoCreate,
   PedidosPaginados,
+  ResumenPedidos,
 } from '@/features/orders/types/pedido'
 import { api } from '@/shared/api/api'
 
 const ordersKey = ['pedidos']
 
-export function useOrders() {
+export function useOrders(estado?: Pedido['estado']) {
   const queryClient = useQueryClient()
   const orders = useQuery({
-    queryKey: ordersKey,
+    queryKey: [...ordersKey, estado ?? 'todos'],
     queryFn: async () =>
-      (await api.get<PedidosPaginados>('/api/v1/pedidos')).data,
+      (await api.get<PedidosPaginados>('/pedidos', {
+        params: { skip: 0, limit: 100, estado },
+      })).data,
   })
   const create = useMutation({
     mutationFn: async (data: PedidoCreate) =>
-      (await api.post<Pedido>('/api/v1/pedidos', data)).data,
+      (await api.post<Pedido>('/pedidos', data)).data,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ordersKey })
       void queryClient.invalidateQueries({ queryKey: ['productos'] })
@@ -28,7 +31,7 @@ export function useOrders() {
     mutationFn: async (pedidoId: number) =>
       (
         await api.patch<Pedido>(
-          `/api/v1/pedidos/${pedidoId}/cancelar`,
+          `/pedidos/${pedidoId}/cancelar`,
         )
       ).data,
     onSuccess: () => {
@@ -36,5 +39,30 @@ export function useOrders() {
       void queryClient.invalidateQueries({ queryKey: ['productos'] })
     },
   })
-  return { orders, create, cancel }
+  const changeStatus = useMutation({
+    mutationFn: async ({
+      pedidoId,
+      estado,
+    }: {
+      pedidoId: number
+      estado: Pedido['estado']
+    }) =>
+      (
+        await api.patch<Pedido>(`/pedidos/${pedidoId}/estado`, { estado })
+      ).data,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ordersKey })
+      void queryClient.invalidateQueries({ queryKey: ['pedido-resumen'] })
+      void queryClient.invalidateQueries({ queryKey: ['productos'] })
+    },
+  })
+  return { orders, create, cancel, changeStatus }
+}
+
+export function useOrderSummary() {
+  return useQuery({
+    queryKey: ['pedido-resumen'],
+    queryFn: async () =>
+      (await api.get<ResumenPedidos>('/pedidos/resumen')).data,
+  })
 }

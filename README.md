@@ -1,26 +1,28 @@
-# Food Store — TPI Programación 4
+# Food Store — Trabajo Práctico Integrador
 
-Aplicación full stack para la gestión de un comercio de alimentos, desarrollada
-para la UTN. El backend implementa FastAPI, SQLModel, PostgreSQL, autenticación
-por cookie JWT y el patrón Unit of Work.
+Aplicación full stack para Programación 4 (UTN) con FastAPI, SQLModel,
+PostgreSQL, React, TypeScript, TanStack Query/Form/Table y Zustand.
 
-Repositorio: <https://github.com/Marcelo-GomezArmoa/tpi-food-store>
+Repositorio: <https://github.com/Marcelo-GomezArmoa/tpi-food-store.git>
 
-## Backend
+## Requisitos
 
-### Variables de entorno
+- Python 3.11 a 3.13
+- PostgreSQL
+- Node.js 20 o superior
+- pnpm
+- Git
 
-Copiar `backend/.env.example` como `backend/.env` y configurar:
+## Instalación
 
-```ini
-DATABASE_URL=postgresql+psycopg2://usuario:password@localhost:5432/food_store
-SECRET_KEY=una-clave-secreta-larga-y-aleatoria
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-FRONTEND_ORIGIN=http://localhost:5173
+### 1. Clonar el repositorio
+
+```powershell
+git clone https://github.com/Marcelo-GomezArmoa/tpi-food-store.git
+cd tpi-food-store
 ```
 
-### Instalación y seed
+### 2. Configurar y ejecutar el backend
 
 ```powershell
 cd backend
@@ -29,69 +31,103 @@ python -m venv .venv
 pip install -r requirements.txt
 Copy-Item .env.example .env
 python -m app.db.seed
-```
-
-El seed es idempotente y carga:
-
-- Usuario administrador: `admin`
-- Contraseña: `Admin1234!`
-- 3 categorías
-- 8 productos con stock
-
-### Ejecución
-
-```powershell
 fastapi dev app/main.py
 ```
 
-API local: `http://localhost:8000`
+El seed es idempotente y crea el administrador, 3 categorías y 8 productos.
 
-OpenAPI: `http://localhost:8000/docs`
+Credenciales de administración:
 
-### Estructura
+- Usuario: `admin`
+- Contraseña: `Admin1234!`
 
-```text
-backend/
-├── app/
-│   ├── core/
-│   ├── db/seed.py
-│   ├── modules/
-│   │   ├── auth/
-│   │   ├── usuarios/
-│   │   ├── categorias/
-│   │   ├── productos/
-│   │   └── pedidos/
-│   └── main.py
-├── tests/
-├── .env.example
-└── requirements.txt
+Backend local: `http://localhost:8000`
+
+Documentación OpenAPI: `http://localhost:8000/docs`
+
+### 3. Configurar y ejecutar el frontend
+
+```powershell
+cd frontend
+pnpm install
+Copy-Item .env.example .env
+pnpm dev
 ```
 
-Todas las rutas funcionales del backend se exponen bajo `/api/v1`:
+Frontend local: `http://localhost:5173`
 
-- `/api/v1/auth/register`
-- `/api/v1/auth/login` — alias compatible `/api/v1/auth/token`
-- `/api/v1/auth/logout`
-- `/api/v1/auth/me`
-- `/api/v1/usuarios`
-- `/api/v1/categorias`
-- `/api/v1/productos`
-- `/api/v1/pedidos`
+## Variables de entorno
 
-### Pruebas
+### `backend/.env.example`
+
+```ini
+DATABASE_URL=postgresql+psycopg2://usuario:password@localhost:5432/food_store
+SECRET_KEY=change-this-value-with-a-long-random-secret
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+FRONTEND_ORIGIN=http://localhost:5173
+```
+
+### `frontend/.env.example`
+
+```ini
+VITE_API_URL=http://localhost:8000/api/v1
+```
+
+La sesión se mantiene en una cookie `HttpOnly`; el frontend utiliza
+`withCredentials` y no persiste tokens en Zustand/localStorage.
+
+## Rutas principales
+
+### Cliente
+
+- `/`
+- `/login`
+- `/register`
+- `/carrito`
+- `/checkout`
+- `/mis-pedidos`
+- `/unauthorized`
+
+### Administración
+
+- `/admin/resumen`
+- `/admin/categorias`
+- `/admin/productos`
+- `/admin/pedidos`
+- `/admin/usuarios`
+
+## Verificación
+
+Backend:
 
 ```powershell
 cd backend
 pytest -q
 ```
 
-## Frontend
+Frontend:
 
 ```powershell
 cd frontend
-pnpm install
-pnpm dev
+pnpm build
 ```
 
-La integración completa de las nuevas rutas y del flujo de carrito/pedidos
-corresponde al Bloque B.
+## Arquitectura
+
+```text
+backend/app/
+├── core/
+├── db/
+└── modules/
+    ├── auth/
+    ├── usuarios/
+    ├── categorias/
+    ├── productos/
+    └── pedidos/
+
+frontend/src/
+├── features/
+├── routes/
+└── shared/
+```

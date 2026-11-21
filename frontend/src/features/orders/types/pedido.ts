@@ -32,6 +32,15 @@ export interface PedidosPaginados {
   items: Pedido[]
 }
 
+export interface ResumenPedidos {
+  pendientes: number
+  en_preparacion: number
+  entregados: number
+  cancelados: number
+  pedidos_hoy: number
+  ingresos_entregados: number
+}
+
 export interface PedidoCreate {
   forma_pago: 'EFECTIVO' | 'TRANSFERENCIA'
   direccion_entrega: string

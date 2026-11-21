@@ -32,11 +32,17 @@ export function Navbar() {
           )}
           {usuario?.role === 'admin' && (
             <>
+              <Link to="/admin/resumen" className="rounded px-3 py-2 hover:bg-blue-500">
+                Resumen
+              </Link>
               <Link to="/admin/categorias" className="rounded px-3 py-2 hover:bg-blue-500">
                 Categorías
               </Link>
               <Link to="/admin/productos" className="rounded px-3 py-2 hover:bg-blue-500">
                 Productos
+              </Link>
+              <Link to="/admin/pedidos" className="rounded px-3 py-2 hover:bg-blue-500">
+                Pedidos
               </Link>
               <Link to="/admin/usuarios" className="rounded px-3 py-2 hover:bg-blue-500">
                 Usuarios
