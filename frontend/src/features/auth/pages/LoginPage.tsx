@@ -5,17 +5,17 @@ import { useAuth } from '@/features/auth/hooks/useAuth'
 
 export function LoginPage() {
   const navigate = useNavigate()
-  const { user, isLoading, error, login } = useAuth()
+  const { usuario, cargando, error, login } = useAuth()
 
   const form = useForm({
-    defaultValues: { email: '', password: '' },
+    defaultValues: { username: '', password: '' },
     onSubmit: async ({ value }) => {
-      await login(value.email.trim(), value.password)
-      void navigate('/categories', { replace: true })
+      await login(value.username.trim(), value.password)
+      void navigate('/', { replace: true })
     },
   })
 
-  if (user) return <Navigate to="/categories" replace />
+  if (usuario) return <Navigate to="/" replace />
 
   return (
     <div className="mx-auto mt-12 max-w-md rounded-lg bg-white p-6 shadow">
@@ -35,23 +35,23 @@ export function LoginPage() {
         }}
       >
         <form.Field
-          name="email"
+          name="username"
           validators={{
             onChange: ({ value }) =>
-              /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+              value.trim().length >= 3
                 ? undefined
-                : 'Ingresa un email válido',
+                : 'El usuario debe tener al menos 3 caracteres',
           }}
         >
           {(field) => (
             <div>
               <label htmlFor="login-email" className="block font-medium">
-                Email
+                Usuario
               </label>
               <input
                 id="login-email"
-                type="email"
-                autoComplete="email"
+                type="text"
+                autoComplete="username"
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(event) => field.handleChange(event.target.value)}
@@ -98,10 +98,10 @@ export function LoginPage() {
         </form.Field>
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={cargando}
           className="w-full rounded bg-blue-600 p-2 font-semibold text-white disabled:opacity-50"
         >
-          {isLoading ? 'Ingresando...' : 'Ingresar'}
+          {cargando ? 'Ingresando...' : 'Ingresar'}
         </button>
       </form>
       <p className="mt-4 text-sm text-gray-600">

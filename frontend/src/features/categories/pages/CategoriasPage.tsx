@@ -9,8 +9,8 @@ import type { Categoria } from "@/features/categories/types/categoria";
 import { useAuth } from "@/features/auth";
 
 export function CategoriasPage() {
-  const { user } = useAuth();
-  const isAdmin = user?.roles.includes("admin") ?? false;
+  const { usuario } = useAuth();
+  const isAdmin = usuario?.role === "admin";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<Categoria | null>(null);
   const { query, save, remove } = useCategories();

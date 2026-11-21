@@ -11,19 +11,17 @@ export function RegisterPage() {
   const register = useRegister()
   const form = useForm({
     defaultValues: {
-      nombre: '',
-      apellido: '',
+      username: '',
+      full_name: '',
       email: '',
-      celular: '',
       password: '',
     },
     onSubmit: async ({ value }) => {
       const data: RegisterData = {
         ...value,
-        nombre: value.nombre.trim(),
-        apellido: value.apellido.trim(),
+        username: value.username.trim(),
+        full_name: value.full_name.trim(),
         email: value.email.trim(),
-        celular: value.celular.trim() || undefined,
       }
 
       try {
@@ -52,32 +50,32 @@ export function RegisterPage() {
         }}
       >
         <form.Field
-          name="nombre"
+          name="username"
           validators={{
             onChange: ({ value }) =>
-              value.trim() ? undefined : 'El nombre es obligatorio',
+              value.trim().length >= 3 ? undefined : 'El usuario debe tener al menos 3 caracteres',
           }}
         >
           {(field) => (
             <TextField
               field={field}
               id="register-nombre"
-              label="Nombre"
+              label="Usuario"
             />
           )}
         </form.Field>
         <form.Field
-          name="apellido"
+          name="full_name"
           validators={{
             onChange: ({ value }) =>
-              value.trim() ? undefined : 'El apellido es obligatorio',
+              value.trim() ? undefined : 'El nombre completo es obligatorio',
           }}
         >
           {(field) => (
             <TextField
               field={field}
               id="register-apellido"
-              label="Apellido"
+              label="Nombre completo"
             />
           )}
         </form.Field>
@@ -96,17 +94,6 @@ export function RegisterPage() {
               id="register-email"
               label="Email"
               type="email"
-              className="sm:col-span-2"
-            />
-          )}
-        </form.Field>
-        <form.Field name="celular">
-          {(field) => (
-            <TextField
-              field={field}
-              id="register-celular"
-              label="Celular (opcional)"
-              type="tel"
               className="sm:col-span-2"
             />
           )}

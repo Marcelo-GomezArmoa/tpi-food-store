@@ -4,11 +4,11 @@ import { AppRouter } from '@/routes/AppRouter'
 import { Toast } from '@/shared/components/Toast'
 
 function App() {
-  const checkAuth = useAuthStore((state) => state.checkAuth)
+  const checkSession = useAuthStore((state) => state.checkSession)
 
   useEffect(() => {
-    void checkAuth()
-  }, [checkAuth])
+    void checkSession()
+  }, [checkSession])
 
   return <><AppRouter /><Toast /></>
 }

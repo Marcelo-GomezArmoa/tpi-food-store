@@ -12,7 +12,7 @@ export function useCategories() {
     queryKey,
     queryFn: async () => {
       try {
-        return (await api.get<Categoria[]>('/categorias')).data
+        return (await api.get<Categoria[]>('/api/v1/categorias')).data
       } catch (error) {
         notifyError(error)
         throw error
@@ -20,8 +20,8 @@ export function useCategories() {
     },
   })
   const save = useMutation({
-    mutationFn: ({ id, data }: { id?: number; data: Omit<Categoria, 'id'> }) =>
-      id === undefined ? api.post('/categorias', data) : api.put(`/categorias/${id}`, data),
+    mutationFn: ({ id, data }: { id?: number; data: Omit<Categoria, 'id' | 'activo'> }) =>
+      id === undefined ? api.post('/api/v1/categorias', data) : api.put(`/api/v1/categorias/${id}`, data),
     onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({ queryKey })
       void queryClient.invalidateQueries({ queryKey: ['producto-categorias'] })
@@ -30,7 +30,7 @@ export function useCategories() {
     onError: notifyError,
   })
   const remove = useMutation({
-    mutationFn: (id: number) => api.delete(`/categorias/${id}`),
+    mutationFn: (id: number) => api.delete(`/api/v1/categorias/${id}`),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey })
       void queryClient.invalidateQueries({ queryKey: ['producto-categorias'] })

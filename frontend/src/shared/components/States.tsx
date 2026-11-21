@@ -13,3 +13,6 @@ export function EmptyState({ message }: StateProps) {
 export function ErrorState({ message }: StateProps) {
   return <p role="alert" className="my-4 rounded border border-red-400 bg-red-50 p-4 text-red-700">{message}</p>;
 }
+
+export const EstadoVacio = EmptyState
+export const EstadoError = ErrorState

@@ -1,18 +1,16 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { AdminUsersPage, LoginPage, RegisterPage, useAuth } from '@/features/auth'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+
+import { AdminUsersPage, LoginPage, RegisterPage } from '@/features/auth'
+import { CarritoPage } from '@/features/cart/pages/CarritoPage'
+import { CatalogoPage } from '@/features/catalog/pages/CatalogoPage'
 import { CategoriasPage } from '@/features/categories'
+import { CheckoutPage } from '@/features/orders/pages/CheckoutPage'
+import { MisPedidosPage } from '@/features/orders/pages/MisPedidosPage'
 import { ProductsPage } from '@/features/products'
-import { IngredientesPage } from '@/features/ingredients'
 import { ProtectedRoute } from '@/routes/ProtectedRoute'
 import { Navbar } from '@/shared/components/Navbar'
 import { UnauthorizedPage } from '@/shared/components/UnauthorizedPage'
 import { useThemeStore } from '@/shared/store/themeStore'
-
-function InitialRedirect() {
-  const { user, checking } = useAuth()
-  if (checking) return <div role="status">Verificando sesión...</div>
-  return <Navigate to={user ? '/categories' : '/login'} replace />
-}
 
 export function AppRouter() {
   const darkMode = useThemeStore((state) => state.darkMode)
@@ -22,25 +20,36 @@ export function AppRouter() {
         <Navbar />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<InitialRedirect />} />
+            <Route path="/" element={<CatalogoPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/carrito" element={<CarritoPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
             <Route element={<ProtectedRoute />}>
-              <Route path="/categories" element={<CategoriasPage />} />
-              <Route path="/categorias" element={<Navigate to="/categories" replace />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/productos" element={<Navigate to="/products" replace />} />
-              <Route path="/ingredientes" element={<IngredientesPage />} />
-              <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-                <Route path="/admin/users" element={<AdminUsersPage />} />
-              </Route>
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/mis-pedidos" element={<MisPedidosPage />} />
             </Route>
-            <Route path="*" element={<div className="p-8 text-center"><h1 className="text-4xl font-bold">404</h1><p>Página no encontrada</p></div>} />
+
+            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route path="/admin/categorias" element={<CategoriasPage />} />
+              <Route path="/admin/productos" element={<ProductsPage />} />
+              <Route path="/admin/usuarios" element={<AdminUsersPage />} />
+            </Route>
+
+            <Route
+              path="*"
+              element={
+                <div className="p-8 text-center">
+                  <h1 className="text-4xl font-bold">404</h1>
+                  <p>Página no encontrada</p>
+                </div>
+              }
+            />
           </Routes>
         </main>
         <footer className="mt-12 bg-gray-900 py-6 text-center text-white">
-          🍕 Food Store UTN • Full Stack Development
+          🍕 Food Store UTN
         </footer>
       </div>
     </BrowserRouter>

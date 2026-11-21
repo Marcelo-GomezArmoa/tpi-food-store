@@ -14,26 +14,25 @@ export function AdminUsersPage() {
       id: 'nombre',
       header: 'Usuario',
       cell: ({ row }) =>
-        `${row.original.nombre} ${row.original.apellido}`,
+        row.original.full_name,
     },
     { accessorKey: 'email', header: 'Email' },
     {
-      accessorKey: 'roles',
-      header: 'Roles',
-      cell: ({ row }) => row.original.roles.join(', ') || 'Sin roles',
+      accessorKey: 'role',
+      header: 'Rol',
     },
     {
       id: 'estado',
       header: 'Estado',
       cell: ({ row }) =>
-        row.original.deleted_at ? 'Desactivado' : 'Activo',
+        row.original.disabled ? 'Desactivado' : 'Activo',
     },
     {
       id: 'acciones',
       header: 'Acciones',
       enableSorting: false,
       cell: ({ row }) => {
-        const active = row.original.deleted_at === null
+        const active = !row.original.disabled
         return (
           <button
             type="button"

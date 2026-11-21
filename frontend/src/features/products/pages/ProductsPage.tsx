@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/shared/components/DataTable";
-import { ProductoCategoriasModal } from "@/features/products/components/ProductoCategoriasModal";
 import { ProductoModal } from "@/features/products/components/ProductoModal";
 import { EmptyState, ErrorState, LoadingState } from "@/shared/components/States";
 import { getApiErrorMessage as getErrorMessage } from "@/shared/api/error";
@@ -10,11 +9,10 @@ import type { Producto } from "@/features/products/types/producto";
 import { useAuth } from "@/features/auth";
 
 export function ProductsPage() {
-  const { user } = useAuth();
-  const isAdmin = user?.roles.includes("admin") ?? false;
+  const { usuario } = useAuth();
+  const isAdmin = usuario?.role === "admin";
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<Producto | null>(null);
-  const [categoriasProducto, setCategoriasProducto] = useState<Producto | null>(null);
   const { query, save, remove } = useProducts();
   const openModal = (producto: Producto | null) => {
     save.reset();
@@ -23,9 +21,9 @@ export function ProductsPage() {
   };
   const columns: ColumnDef<Producto>[] = [
     { accessorKey: "id", header: "ID" },
-    { id: "imagen", header: "Imagen", enableSorting: false, cell: ({ row }) => row.original.imagenes_url[0] ? (
+    { id: "imagen", header: "Imagen", enableSorting: false, cell: ({ row }) => row.original.imagen_url ? (
       <img
-        src={row.original.imagenes_url[0]}
+        src={row.original.imagen_url}
         alt={row.original.nombre}
         className="h-14 w-14 rounded object-cover"
         onError={(event) => {
@@ -40,7 +38,6 @@ export function ProductsPage() {
     { id: "acciones", header: "Acciones", enableSorting: false, cell: ({ row }) => (
       <div className="flex flex-wrap gap-2">
         {isAdmin && <button type="button" onClick={() => openModal(row.original)} className="rounded bg-purple-600 px-3 py-1 text-white">Editar</button>}
-        <button type="button" onClick={() => setCategoriasProducto(row.original)} className="rounded bg-blue-600 px-3 py-1 text-white">Categorías</button>
         {isAdmin && <button type="button" disabled={remove.isPending} onClick={() => {
           if (window.confirm("¿Estás seguro de que deseas eliminar este producto?")) remove.mutate(row.original.id);
         }} className="rounded bg-red-600 px-3 py-1 text-white disabled:opacity-50">Eliminar</button>}
@@ -57,11 +54,10 @@ export function ProductsPage() {
       {query.isLoading && <LoadingState message="Cargando productos..." />}
       {query.isError && <ErrorState message={getErrorMessage(query.error)} />}
       {remove.isError && <ErrorState message={`Error al eliminar: ${getErrorMessage(remove.error)}`} />}
-      {query.data && (query.data.length ? <DataTable data={query.data} columns={columns} /> : <EmptyState message="No hay productos. ¡Crea uno nuevo!" />)}
+      {query.data && (query.data.items.length ? <DataTable data={query.data.items} columns={columns} /> : <EmptyState message="No hay productos. ¡Crea uno nuevo!" />)}
       {isAdmin && isModalOpen && (
         <ProductoModal key={editing?.id ?? "new"} producto={editing} error={save.error ? getErrorMessage(save.error) : null} isPending={save.isPending} onClose={() => setIsModalOpen(false)} onSubmit={(data) => save.mutate({ id: editing?.id, data }, { onSuccess: () => { setIsModalOpen(false); setEditing(null); } })} />
       )}
-      {categoriasProducto && <ProductoCategoriasModal producto={categoriasProducto} onClose={() => setCategoriasProducto(null)} />}
     </div>
   );
 }

@@ -1,36 +1,29 @@
+export type UserRole = 'user' | 'admin'
+
 export interface UsuarioAuth {
   id: number
-  nombre: string
-  apellido: string
+  username: string
+  full_name: string
   email: string
-  celular?: string | null
-  created_at?: string
-  updated_at?: string
-  deleted_at?: string | null
-  roles: string[]
+  role: UserRole
+  disabled: boolean
+  created_at: string
 }
 
 export interface LoginCredentials {
-  email: string
+  username: string
   password: string
 }
 
 export interface RegisterData {
-  nombre: string
-  apellido: string
+  username: string
+  full_name: string
   email: string
-  celular?: string | null
   password: string
 }
 
-export interface UsuarioAdmin extends UsuarioAuth {
-  celular: string | null
-  created_at: string
-  updated_at: string
-  deleted_at: string | null
-}
+export type UsuarioAdmin = UsuarioAuth
 
 export interface LoginResponse {
-  access_token: string
-  token_type: string
+  message: string
 }
