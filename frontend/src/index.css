@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+.dark {
+  background-color: #111827;
+  color: #f3f4f6;
+  color-scheme: dark;
+}
+
+.dark .bg-white { background-color: #1f2937; }
+.dark .bg-gray-100,
+.dark .bg-gray-200 { background-color: #374151; }
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-gray-600,
+.dark .text-gray-500 { color: #e5e7eb; }
+.dark .bg-white.text-blue-800,
+.dark a.text-blue-700 { color: #93c5fd; }
+.dark input,
+.dark textarea,
+.dark select { background-color: #374151; color: #f9fafb; }

@@ -1,0 +1,6 @@
+export { LoginPage } from '@/features/auth/pages/LoginPage'
+export { RegisterPage } from '@/features/auth/pages/RegisterPage'
+export { AdminUsersPage } from '@/features/auth/pages/AdminUsersPage'
+export { useAuth } from '@/features/auth/hooks/useAuth'
+export { useAuthStore } from '@/features/auth/store/authStore'
+export type { UsuarioAuth, UsuarioAdmin, RegisterData } from '@/features/auth/types/auth.types'
