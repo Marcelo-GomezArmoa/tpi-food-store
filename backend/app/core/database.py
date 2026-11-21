@@ -1,35 +1,24 @@
-import os
-from pathlib import Path
+from collections.abc import Generator
 
-from dotenv import load_dotenv
 from sqlmodel import Session, SQLModel, create_engine
 
-from app.categoria.model import Categoria
-from app.producto.model import Producto, ProductoCategoria
+from app.core.config import settings
 
-load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise RuntimeError(
-        "DATABASE_URL no está configurada. Copia backend/.env.example como "
-        "backend/.env y configura una URL de PostgreSQL."
-    )
-if not DATABASE_URL.startswith(("postgresql://", "postgresql+psycopg2://")):
-    raise RuntimeError("DATABASE_URL debe apuntar a una base de datos PostgreSQL.")
-
-engine = create_engine(DATABASE_URL, echo=os.getenv("DEBUG", "False").lower() == "true")
-
-# Fuerza el registro de todos los modelos antes de crear las tablas.
-REGISTERED_MODELS = (Categoria, Producto, ProductoCategoria)
+session_factory = Session
 
 
-def create_db_and_tables():
-    """Crea todas las tablas en la base de datos."""
+def create_all_tables() -> None:
+    from app.modules.categorias.models import Categoria
+    from app.modules.pedidos.models import DetallePedido, Pedido
+    from app.modules.productos.models import Producto
+    from app.modules.usuarios.models import Usuario
+
+    _ = (Categoria, Producto, Pedido, DetallePedido, Usuario)
     SQLModel.metadata.create_all(engine)
 
 
-def get_session():
-    """Proporciona una sesión de base de datos como dependencia."""
-    with Session(engine) as session:
+def get_session() -> Generator[Session, None, None]:
+    with session_factory(engine) as session:
         yield session

@@ -1,65 +1,40 @@
-@baseUrl = http://localhost:8000
-@categoriaId = 1
-@productoId = 1
+@baseUrl = http://localhost:8000/api/v1
 
-### Crear categoría
-POST {{baseUrl}}/categorias
-Content-Type: application/json
+### Login administrador
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/x-www-form-urlencoded
 
-{
-  "nombre": "Bebidas",
-  "descripcion": "Bebidas frías y calientes"
-}
+username=admin&password=Admin1234!
 
-### Listar categorías
+### Sesión actual
+GET {{baseUrl}}/auth/me
+Cookie: access_token={{login.response.body.access_token}}
+
+### Categorías
 GET {{baseUrl}}/categorias
+Cookie: access_token={{login.response.body.access_token}}
 
-### Obtener categoría
-GET {{baseUrl}}/categorias/{{categoriaId}}
-
-### Actualizar categoría
-PUT {{baseUrl}}/categorias/{{categoriaId}}
-Content-Type: application/json
-
-{
-  "nombre": "Bebidas y jugos",
-  "descripcion": "Bebidas, jugos y refrescos"
-}
-
-### Crear producto
-POST {{baseUrl}}/productos
-Content-Type: application/json
-
-{
-  "nombre": "Jugo de naranja",
-  "descripcion": "Jugo natural",
-  "precio_base": 2500,
-  "imagenes_url": [],
-  "disponible": true
-}
-
-### Listar productos
+### Productos
 GET {{baseUrl}}/productos
+Cookie: access_token={{login.response.body.access_token}}
 
-### Obtener producto
-GET {{baseUrl}}/productos/{{productoId}}
-
-### Asignar categoría al producto
-POST {{baseUrl}}/productos/{{productoId}}/categorias
+### Crear pedido
+POST {{baseUrl}}/pedidos
+Cookie: access_token={{login.response.body.access_token}}
 Content-Type: application/json
 
 {
-  "categoria_id": {{categoriaId}}
+  "forma_pago": "EFECTIVO",
+  "direccion_entrega": "Calle 123",
+  "items": [
+    {
+      "producto_id": 1,
+      "cantidad": 2
+    }
+  ]
 }
 
-### Listar categorías del producto
-GET {{baseUrl}}/productos/{{productoId}}/categorias
-
-### Desvincular categoría del producto
-DELETE {{baseUrl}}/productos/{{productoId}}/categorias/{{categoriaId}}
-
-### Eliminar producto
-DELETE {{baseUrl}}/productos/{{productoId}}
-
-### Eliminar categoría
-DELETE {{baseUrl}}/categorias/{{categoriaId}}
+### Pedidos
+GET {{baseUrl}}/pedidos
+Cookie: access_token={{login.response.body.access_token}}
