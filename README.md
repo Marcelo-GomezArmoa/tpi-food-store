@@ -3,7 +3,10 @@
 Aplicación full stack para Programación 4 (UTN) con FastAPI, SQLModel,
 PostgreSQL, React, TypeScript, TanStack Query/Form/Table y Zustand.
 
-Repositorio: <https://github.com/Marcelo-GomezArmoa/tpi-food-store.git>
+## Repositorio y Video de Demostración
+
+- **Repositorio:** https://github.com/Marcelo-GomezArmoa/tpi-food-store.git
+- **Video de demostración:** https://youtu.be/q89iKppDJtQ
 
 ## Requisitos
 
